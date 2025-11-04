@@ -1,88 +1,49 @@
-# Dotbot [![Build Status](https://github.com/anishathalye/dotbot/actions/workflows/ci.yml/badge.svg)](https://github.com/anishathalye/dotbot/actions/workflows/ci.yml) [![Coverage](https://codecov.io/gh/anishathalye/dotbot/branch/master/graph/badge.svg)](https://app.codecov.io/gh/anishathalye/dotbot) [![PyPI](https://img.shields.io/pypi/v/dotbot.svg)](https://pypi.org/pypi/dotbot/) [![PyPI - Python version](https://img.shields.io/pypi/pyversions/dotbot.svg)](https://pypi.org/pypi/dotbot/)
+# Dotbot (TypeScript/Bun Port)
 
-Dotbot makes installing your dotfiles as easy as `git clone $url && cd dotfiles && ./install`, even on a freshly installed system!
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
-- [Rationale](#rationale)
-- [Getting Started](#getting-started)
-- [Installing Your Dotfiles](#installing-your-dotfiles)
-- [Configuration](#configuration)
-- [Directives](#directives) ([Link](#link), [Create](#create), [Shell](#shell), [Clean](#clean), [Defaults](#defaults))
-- [Plugins](#plugins)
-- [Command-line Arguments](#command-line-arguments)
-- [Wiki][wiki]
+**Dotbot** makes installing your dotfiles as easy as `git clone $url && cd dotfiles && ./install`, even on a freshly installed system!
 
----
+This is a **TypeScript/Bun port** of the original [Python Dotbot](https://github.com/anishathalye/dotbot) by Anish Athalye. It maintains full feature parity with the Python version while leveraging the performance and modern features of Bun and TypeScript.
 
-## Rationale
+## Features
 
-Dotbot is a tool that bootstraps your dotfiles (it's a [Dot]files [bo]o[t]strapper, get it?). It does *less* than you think, because version control systems do more than you think.
+- ✅ **Lightweight and self-contained** - No external dependencies needed at runtime
+- ✅ **Idempotent** - Safe to run multiple times
+- ✅ **Cross-platform** - Works on Linux, macOS, and Windows
+- ✅ **VCS-agnostic** - Works with any version control system
+- ✅ **Extensible** - Support for custom plugins
+- ✅ **Full YAML/JSON support** - Flexible configuration formats
+- ✅ **Dry-run mode** - Preview changes before applying them
 
-Dotbot is designed to be lightweight and self-contained, with no external dependencies and no installation required. Dotbot can also be a drop-in replacement for any other tool you were using to manage your dotfiles, and Dotbot is VCS-agnostic -- it doesn't make any attempt to manage your dotfiles.
+## Quick Start
 
-See [this blog post](https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/) or more resources on the [tutorials page](https://github.com/anishathalye/dotbot/wiki/Tutorials) for more detailed explanations of how to organize your dotfiles.
-
-## Getting started
-
-### Starting fresh?
-
-Great! You can automate the creation of your dotfiles by using the user-contributed [init-dotfiles][init-dotfiles] script. If you'd rather use a template repository, check out [dotfiles_template][dotfiles-template]. Or, if you're just looking for [some inspiration][inspiration], we've got you covered.
-
-### Integrate with existing dotfiles
-
-The following will help you get set up using Dotbot in just a few steps.
-
-You can create an empty configuration file with:
+### Installation
 
 ```bash
-touch install.conf.yaml
+# Clone this repository
+git clone https://github.com/your-username/dotbot.git
+
+# Or install via Bun (if published)
+bun install -g dotbot
 ```
 
-If you're using **Git**, you can add Dotbot as a submodule:
+### Basic Usage
 
 ```bash
-cd ~/.dotfiles # replace with the path to your dotfiles
-git init # initialize repository if needed
-git submodule add https://github.com/anishathalye/dotbot
-git config -f .gitmodules submodule.dotbot.ignore dirty # ignore dirty commits in the submodule
-cp dotbot/tools/git-submodule/install .
+# Run with a config file
+./bin/dotbot.ts -c install.conf.yaml
+
+# Dry run to preview changes
+./bin/dotbot.ts -c install.conf.yaml --dry-run
+
+# Verbose output
+./bin/dotbot.ts -c install.conf.yaml --verbose
 ```
 
-If you're using **Mercurial**, you can add Dotbot as a subrepo:
+## Configuration
 
-```bash
-cd ~/.dotfiles # replace with the path to your dotfiles
-hg init # initialize repository if needed
-echo "dotbot = [git]https://github.com/anishathalye/dotbot" > .hgsub
-hg add .hgsub
-git clone https://github.com/anishathalye/dotbot
-cp dotbot/tools/hg-subrepo/install .
-```
-
-If you are using PowerShell instead of a POSIX shell, you can use the provided `install.ps1` script instead of `install`. On Windows, Dotbot only supports Python 3.8+, and it requires that your account is [allowed to create symbolic links][windows-symlinks].
-
-To get started, you just need to fill in the `install.conf.yaml` and Dotbot will take care of the rest. To help you get started we have [an example](#full-example) config file as well as [configuration documentation](#configuration) for the accepted parameters.
-
-Note: The `install` script is merely a shim that checks out the appropriate version of Dotbot and calls the full Dotbot installer. By default, the script assumes that the configuration is located in `install.conf.yaml` the Dotbot submodule is located in `dotbot`. You can change either of these parameters by editing the variables in the `install` script appropriately.
-
-Setting up Dotbot as a submodule or subrepo locks it on the current version. You can upgrade Dotbot at any point. If using a submodule, run `git submodule update --remote dotbot`, substituting `dotbot` with the path to the Dotbot submodule; be sure to commit your changes before running `./install`, otherwise the old version of Dotbot will be checked out by the install script. If using a subrepo, run `git fetch && git checkout origin/master` in the Dotbot directory.
-
-#### Installation as a command-line program
-
-If you prefer, instead of bundling Dotbot as a submodule with your dotfiles, you can install Dotbot from [PyPI] as a standalone command-line program. Use the tool of your choice, such as `pip` or [`uv`][uv]:
-
-```bash
-uv tool install dotbot
-```
-
-Some systems include Dotbot in their native package manager, such as [Homebrew][homebrew-dotbot] and [Arch Linux][arch-dotbot], so for example, you can also install it with `brew install dotbot`.
-
-With Dotbot installed as a command-line program on your system, you can invoke Dotbot with `dotbot -c <path to configuration file>`.
-
-### Full example
-
-Here's an example of a complete configuration.
-
-The conventional name for the configuration file is `install.conf.yaml`.
+Dotbot uses YAML or JSON configuration files. Here's a complete example:
 
 ```yaml
 - defaults:
@@ -104,259 +65,90 @@ The conventional name for the configuration file is `install.conf.yaml`.
   - [git submodule update --init --recursive, Installing submodules]
 ```
 
-The configuration file is typically written in YAML, but it can also be written in JSON (which is a [subset of YAML][json2yaml]). JSON configuration files are conventionally named `install.conf.json`.
-
-## Installing Your Dotfiles
-
-To install your dotfiles on a new machine or after updates:
-
-```bash
-git clone <your-dotfiles-repo-url> ~/.dotfiles
-cd ~/.dotfiles
-./install
-```
-
-To update an existing installation:
-
-```bash
-cd ~/.dotfiles
-git pull
-./install
-```
-
-## Configuration
-
-Dotbot uses YAML or JSON-formatted configuration files to let you specify how to set up your dotfiles. Currently, Dotbot knows how to [link](#link) files and folders, [create](#create) folders, execute [shell](#shell) commands, and [clean](#clean) directories of broken symbolic links. Dotbot also supports user [plugins](#plugins) for custom commands.
-
-**Ideally, bootstrap configurations should be idempotent. That is, the installer should be able to be run multiple times without causing any problems.** This makes a lot of things easier to do (in particular, syncing updates between machines becomes really easy).
-
-Dotbot configuration files are arrays of tasks, where each task is a dictionary that contains a command name mapping to data for that command. Tasks are run in the order in which they are specified. Commands within a task do not have a defined ordering.
-
-When writing nested constructs, keep in mind that YAML is whitespace-sensitive. Following the formatting used in the examples is a good idea. If a YAML configuration file is not behaving as you expect, try inspecting the [equivalent JSON][json2yaml] and check that it is correct.
-
 ## Directives
-
-Most Dotbot commands support both a simplified and extended syntax, and they can also be configured via setting [defaults](#defaults).
 
 ### Link
 
-Link commands create symbolic links at specified locations that point to files in your dotfiles repository. This allows you to keep your configuration files in version control while having them appear where applications expect to find them. Symlinks are created by default, but hardlinks are also supported. If desired, items can be specified to be forcibly linked, overwriting existing files if necessary. Environment variables in paths are automatically expanded.
-
-#### Format
-
-Link commands are specified as a dictionary mapping link names to targets. The link name (key) is where the symbolic link will be created, and the target (value) is the file in your dotfiles directory that the link will point to. Targets are specified relative to the base directory (that is specified when running the installer). If linking directories, *do not* include a trailing slash.
-
-Link commands support an optional extended configuration. In this type of configuration, instead of specifying targets directly, link names are mapped to extended configuration dictionaries.
-
-| Parameter | Explanation |
-| --- | --- |
-| `path` | The target for the link (file in dotfiles directory), the same as in the shortcut syntax (default: null, automatic (see below)) |
-| `type` | The type of link to create. If specified, must be either `symlink` or `hardlink`. (default: `symlink`) |
-| `create` | When true, create parent directories to the link as needed. (default: false) |
-| `relink` | Removes the old link if it's a symlink (default: false) |
-| `force` | Force removes the old link, file or folder, and forces a new link (default: false) |
-| `relative` | When creating a symlink, use a relative path to the target. (default: false, absolute links) |
-| `canonicalize` | Resolve any symbolic links encountered in the target to symlink to the canonical path (default: true, real paths) |
-| `if` | Execute this in your `$SHELL` and only link if it is successful. |
-| `ignore-missing` | Do not fail if the target is missing and create the link anyway (default: false) |
-| `glob` | Treat `path` as a glob pattern, expanding patterns referenced below, linking all *files* matched. (default: false) |
-| `exclude` | Array of glob patterns to remove from glob matches. Uses same syntax as `path`. Ignored if `glob` is `false`. (default: empty, keep all matches) |
-| `prefix` | Prepend prefix prefix to basename of each file when linked, when `glob` is `true`. (default: '') |
-
-When `glob: true`, Dotbot uses [glob.glob](https://docs.python.org/3/library/glob.html#glob.glob) to resolve glob paths, expanding Unix shell-style wildcards, which are **not** the same as regular expressions; Only the following are expanded:
-
-| Pattern  | Meaning                            |
-|:---------|:-----------------------------------|
-| `*`      | matches anything                   |
-| `**`     | matches any **file**, recursively  |
-| `?`      | matches any single character       |
-| `[seq]`  | matches any character in `seq`     |
-| `[!seq]` | matches any character not in `seq` |
-
-However, due to the design of `glob.glob`, using a glob pattern such as `config/*`, will **not** match items that begin with `.`. To specifically capture items that being with `.`, you will need to include the `.` in the pattern, like this: `config/.*`.
-
-When using glob with the `exclude:` option, the paths in the exclude paths should be relative to the base directory, same as the glob pattern itself. For example, if a glob pattern `vim/*` matches directories `vim/autoload`, `vim/ftdetect`, `vim/ftplugin`, and `vim/spell`, and you want to ignore the spell directory, then you should use `exclude: ["vim/spell"]` (not just `"spell"`).
-
-#### Example
+Create symbolic links (or hard links) to your dotfiles:
 
 ```yaml
 - link:
-    ~/.config/terminator:
+    ~/.vimrc: vimrc
+    ~/.config/nvim:
+      path: nvim
       create: true
-      path: config/terminator
-    ~/.vim: vim
-    ~/.vimrc:
-      relink: true
-      path: vimrc
     ~/.zshrc:
       force: true
       path: zshrc
-    ~/.hammerspoon:
-      if: '[ `uname` = Darwin ]'
-      path: hammerspoon
-    ~/.config/:
-      glob: true
-      path: dotconf/config/**
-    ~/:
-      glob: true
-      path: dotconf/*
-      prefix: '.'
 ```
 
-If the target location is omitted or set to `null`, Dotbot will use the basename of the link name, with a leading `.` stripped if present. This makes the following two config files equivalent.
-
-Explicit targets:
-
-```yaml
-- link:
-    ~/bin/ack: ack
-    ~/.vim: vim
-    ~/.vimrc:
-      relink: true
-      path: vimrc
-    ~/.zshrc:
-      force: true
-      path: zshrc
-    ~/.config/:
-      glob: true
-      path: config/*
-      relink: true
-      exclude: [ config/Code ]
-    ~/.config/Code/User/:
-      create: true
-      glob: true
-      path: config/Code/User/*
-      relink: true
-```
-
-Implicit targets:
-
-```yaml
-- link:
-    ~/bin/ack:
-    ~/.vim:
-    ~/.vimrc:
-      relink: true
-    ~/.zshrc:
-      force: true
-    ~/.config/:
-      glob: true
-      path: config/*
-      relink: true
-      exclude: [ config/Code ]
-    ~/.config/Code/User/:
-      create: true
-      glob: true
-      path: config/Code/User/*
-      relink: true
-```
+**Options:**
+- `path` - Target file in dotfiles directory
+- `type` - `symlink` (default) or `hardlink`
+- `create` - Create parent directories
+- `relink` - Remove old symlinks
+- `force` - Force overwrite existing files
+- `relative` - Use relative paths
+- `glob` - Enable glob pattern matching
+- `exclude` - Exclude patterns (with glob)
+- `prefix` - Add prefix to linked files
+- `if` - Conditional execution (shell command)
+- `ignore-missing` - Don't fail if target is missing
 
 ### Create
 
-Create commands specify empty directories to be created.  This can be useful for scaffolding out folders or parent folder structure required for various apps, plugins, shell commands, etc.
-
-#### Format
-
-Create commands are specified as an array of directories to be created. If you want to use the optional extended configuration, create commands are specified as dictionaries. For convenience, it's permissible to leave the options blank (null) in the dictionary syntax.
-
-| Parameter | Explanation |
-| --- | --- |
-| `mode` | The file mode to use for creating the leaf directory (default: 0777) |
-
-The `mode` parameter is treated in the same way as in Python's [os.mkdir](https://docs.python.org/3/library/os.html#mkdir-modebits). Its behavior is platform-dependent. On Unix systems, the current umask value is first masked out.
-
-#### Example
+Create empty directories:
 
 ```yaml
 - create:
     - ~/downloads
     - ~/.vim/undo-history
-- create:
-    ~/.ssh:
-      mode: 0700
-    ~/projects:
+    - ~/.ssh:
+        mode: 0700
 ```
 
 ### Shell
 
-Shell commands specify shell commands to be run. Shell commands are run in the base directory (that is specified when running the installer).
-
-#### Format
-
-Shell commands can be specified in several different ways. The simplest way is just to specify a command as a string containing the command to be run.
-
-Another way is to specify a two element array where the first element is the shell command and the second is an optional human-readable description.
-
-Shell commands support an extended syntax as well, which provides more fine-grained control.
-
-| Parameter | Explanation |
-| --- | --- |
-| `command` | The command to be run |
-| `description` | A human-readable message describing the command (default: null) |
-| `quiet` | Show only the description but not the command in log output (default: false) |
-| `stdin` | Allow a command to read from standard input (default: false) |
-| `stdout` | Show a command's output from stdout (default: false) |
-| `stderr` | Show a command's error output from stderr (default: false) |
-
-Note that `quiet` controls whether the command (a string) is printed in log output, it does not control whether the output from running the command is printed (that is controlled by `stdout` / `stderr`). When a command's `stdin` / `stdout` / `stderr` is not enabled (which is the default), it's connected to `/dev/null`, disabling input and hiding output.
-
-#### Example
+Execute shell commands:
 
 ```yaml
 - shell:
-  - chsh -s $(which zsh)
-  - [chsh -s $(which zsh), Making zsh the default shell]
+  - echo "Hello, World!"
+  - [git submodule update, Updating submodules]
   -
-    command: read var && echo Your variable is $var
-    stdin: true
+    command: brew install zsh
+    description: Installing zsh
     stdout: true
-    description: Reading and printing variable
-    quiet: true
-  -
-    command: read fail
     stderr: true
 ```
 
+**Options:**
+- `command` - The command to run
+- `description` - Human-readable description
+- `stdin` - Enable stdin (default: false)
+- `stdout` - Show stdout (default: false)
+- `stderr` - Show stderr (default: false)
+- `quiet` - Only show description, not command
+
 ### Clean
 
-Clean commands specify directories that should be checked for dead symbolic links. These dead links are removed automatically. Only dead links that point to somewhere within the dotfiles directory are removed unless the `force` option is set to `true`.
-
-#### Format
-
-Clean commands are specified as an array of directories to be cleaned.
-
-Clean commands also support an extended configuration syntax.
-
-| Parameter | Explanation |
-| --- | --- |
-| `force` | Remove dead links even if they don't point to a file inside the dotfiles directory (default: false) |
-| `recursive` | Traverse the directory recursively looking for dead links (default: false) |
-
-Note: using the `recursive` option for `~` is not recommended because it will be slow.
-
-#### Example
+Remove broken symbolic links:
 
 ```yaml
-- clean: ['~']
-
 - clean:
-    ~/:
-      force: true
-    ~/.config:
-      recursive: true
+    - ~
+    - ~/.config:
+        recursive: true
+        force: true
 ```
+
+**Options:**
+- `force` - Remove links outside dotfiles directory
+- `recursive` - Recursively clean directories
 
 ### Defaults
 
-Default options for plugins can be specified so that options don't have to be repeated many times. This can be very useful to use with the link command, for example.
-
-Defaults apply to all commands that come after setting the defaults. Defaults can be set multiple times; each change replaces the defaults with a new set of options.
-
-#### Format
-
-Defaults are specified as a dictionary mapping action names to settings, which are dictionaries from option names to values.
-
-#### Example
+Set default options for directives:
 
 ```yaml
 - defaults:
@@ -365,78 +157,130 @@ Defaults are specified as a dictionary mapping action names to settings, which a
       relink: true
 ```
 
-### Plugins
+## Command-line Options
 
-Dotbot also supports custom directives implemented by plugins. Plugins are implemented as subclasses of `dotbot.Plugin`, so they must implement `can_handle()` and `handle()`. The `can_handle()` method should return `True` if the plugin can handle an action with the given name. The `handle()` method should do something and return whether or not it completed successfully.
+```bash
+Options:
+  -c, --config-file <file...>  Configuration file(s) to use
+  -d, --base-directory <dir>   Base directory for operations
+  -p, --plugin <plugin...>     Load additional plugins
+  --disable-built-in-plugins   Disable built-in plugins
+  --only <directive...>        Only run specified directives
+  --except <directive...>      Skip specified directives
+  -n, --dry-run                Preview without making changes
+  -v, --verbose                Increase verbosity
+  -q, --quiet                  Suppress most output
+  -x, --exit-on-failure        Exit on first failure
+  --force-color                Force colored output
+  --no-color                   Disable colored output
+  --version                    Show version number
+  -h, --help                   Display help
+```
 
-Plugins should declare support for dry-run with `supports_dry_run = True`, and implement this support by logging what the plugin _would_ do (without doing it) when `Context.dry_run()` is set. Plugins that don't explicitly declare support for dry-run will be skipped when Dotbot is run with `--dry-run`.
+## Plugin System
 
-All built-in Dotbot directives are written as plugins that are loaded by default, so those can be used as a reference when writing custom plugins.
+Dotbot supports custom plugins written in TypeScript/JavaScript:
 
-See [here][plugins] for a current list of third-party plugins.
+```typescript
+import { Plugin, Context } from "dotbot";
 
-#### Loading plugins via configuration
+export class MyPlugin extends Plugin {
+  static supportsDryRun = true;
 
-You can specify plugins in your configuration file as an array of files or directories (containing plugins) to load:
+  canHandle(directive: string): boolean {
+    return directive === "my-directive";
+  }
+
+  handle(directive: string, data: unknown): boolean {
+    // Your plugin logic here
+    return true;
+  }
+}
+```
+
+Load plugins via config:
 
 ```yaml
 - plugins:
-    - dotbot-plugins/dotbot-brew/
-    - dotbot-plugins/custom_plugin.py
+    - ./plugins/my-plugin.ts
 ```
 
-Paths specified in the config file are interpreted relative to the _base directory_.
-
-#### Loading plugins via command line
-
-Plugins can also be loaded using the `--plugin` option. You can use this argument multiple times:
+Or via command line:
 
 ```bash
-dotbot --plugin dotbot-plugins/dotbot-brew/ --plugin dotbot-plugins/custom_plugin.py ...
+./bin/dotbot.ts -c config.yaml --plugin ./plugins/my-plugin.ts
 ```
 
-Paths specified this way are interpreted relative to the _working directory_ where `dotbot` is invoked.
+## Development
 
-It is recommended that these options are added directly to your `install` script for consistency across installations.
+### Requirements
 
-## Command-line arguments
+- [Bun](https://bun.sh/) >= 1.0
+- TypeScript >= 5.0
 
-Dotbot takes a number of command-line arguments; you can run Dotbot with `--help`, for example, by running `./install --help`, to see the full list of options. Here, we highlight a couple that are particularly interesting.
+### Setup
 
-### `--dry-run`
+```bash
+# Install dependencies
+bun install
 
-You can call `./install --dry-run`, and Dotbot will explain what it _would_ do, without actually making any changes. This can be helpful for safely testing your configuration. Plugins that don't support dry-run will be skipped.
+# Run type checking
+bun run typecheck
 
-### `--only`
+# Run tests
+bun test
 
-You can call `./install --only [list of directives]`, such as `./install --only link`, and Dotbot will only run those sections of the config file.
+# Build standalone executable
+bun run build
+```
 
-### `--except`
+### Project Structure
 
-You can call `./install --except [list of directives]`, such as `./install --except shell`, and Dotbot will run all the sections of the config file except the ones listed.
+```
+src/
+├── cli.ts              # Command-line interface
+├── dispatcher.ts       # Task routing
+├── plugin.ts           # Plugin base class
+├── context.ts          # Shared context
+├── config.ts           # Config file parsing
+├── messenger/          # Logging system
+├── plugins/            # Built-in plugins
+│   ├── link.ts
+│   ├── create.ts
+│   ├── shell.ts
+│   └── clean.ts
+└── util/               # Utility functions
+```
 
-## Wiki
+## Differences from Python Version
 
-Check out the [Dotbot wiki][wiki] for more information, tips and tricks, user-contributed plugins, and more.
+- **Performance**: Significantly faster startup time with Bun
+- **Module System**: Uses ES modules instead of Python imports
+- **Type Safety**: Full TypeScript type checking
+- **Async Operations**: Native async/await throughout
+- **Glob Library**: Uses `fast-glob` instead of Python's `glob`
+- **YAML Parser**: Uses `js-yaml` instead of PyYAML
+
+All configuration files from the Python version are fully compatible!
 
 ## Contributing
 
-Do you have a feature request, bug report, or patch? Great! See [CONTRIBUTING.md][contributing] for information on what you can do about that.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-Copyright (c) Anish Athalye. Released under the MIT License. See [LICENSE.md][license] for details.
+Copyright (c) Anish Athalye (original Python version)
+TypeScript/Bun port by [Your Name]
 
-[PyPI]: https://pypi.org/project/dotbot/
-[uv]: https://github.com/astral-sh/uv
-[homebrew-dotbot]: https://formulae.brew.sh/formula/dotbot
-[arch-dotbot]: https://aur.archlinux.org/packages/dotbot
-[init-dotfiles]: https://github.com/Vaelatern/init-dotfiles
-[dotfiles-template]: https://github.com/anishathalye/dotfiles_template
-[inspiration]: https://github.com/anishathalye/dotbot/wiki/Users
-[windows-symlinks]: https://learn.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/create-symbolic-links
-[json2yaml]: https://www.json2yaml.com/
-[plugins]: https://github.com/anishathalye/dotbot/wiki/Plugins
-[wiki]: https://github.com/anishathalye/dotbot/wiki
-[contributing]: CONTRIBUTING.md
-[license]: LICENSE.md
+Released under the MIT License. See [LICENSE.md](LICENSE.md) for details.
+
+## Credits
+
+- Original Python Dotbot: [anishathalye/dotbot](https://github.com/anishathalye/dotbot)
+- Inspired by the simplicity and elegance of the original design
+
+## Links
+
+- [Original Python Dotbot](https://github.com/anishathalye/dotbot)
+- [Bun Documentation](https://bun.sh/docs)
+- [Dotbot Wiki](https://github.com/anishathalye/dotbot/wiki) (Python version, mostly applicable)

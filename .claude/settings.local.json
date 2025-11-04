@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(test:*)",
+      "Bash(bun init:*)",
+      "Bash(bun add:*)",
+      "Bash(chmod:*)",
+      "Bash(./bin/dotbot.ts:*)",
+      "Bash(bun run typecheck:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

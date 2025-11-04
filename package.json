@@ -1,0 +1,34 @@
+{
+  "name": "dotbot",
+  "version": "2.0.0",
+  "description": "A tool that bootstraps your dotfiles (TypeScript/Bun port)",
+  "module": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "dotbot": "./bin/dotbot.ts"
+  },
+  "scripts": {
+    "start": "bun run bin/dotbot.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "build": "bun build bin/dotbot.ts --compile --outfile dotbot"
+  },
+  "keywords": ["dotfiles", "symlink", "bootstrap", "configuration"],
+  "author": "Anish Athalye (original Python version)",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/js-yaml": "4.0.9"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "chalk": "5.6.2",
+    "commander": "14.0.2",
+    "fast-glob": "3.3.3",
+    "js-yaml": "4.1.0"
+  }
+}
